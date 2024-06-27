@@ -30,10 +30,12 @@ app.use(express.static("public"));
 app.use("/auth", require("./src/routes/auth"));
 app.use("/movie", require("./src/routes/movie"));
 
+// Redirect to movie route on root access
 app.get("/", (req, res) => {
   res.redirect("/movie");
 });
 
+// Start the server
 app.listen(port, () => {
   console.log(`App running at http://localhost:${port}`);
 });

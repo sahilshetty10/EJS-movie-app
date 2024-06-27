@@ -19,39 +19,37 @@ router.get("/signup", isLoggedIn, (req, res) => {
   res.render("signup", { title: "Sign Up" });
 });
 
-// Login
+// Handle login
 router.post("/login", (req, res) => {
   const { username, password } = req.body;
   User.findByUsername(username, (err, user) => {
     if (err) {
       console.error(err);
-      return res.redirect("/auth/login");
+      return res.status(500).send("Internal Server Error");
     }
     if (!user || user.password !== password) {
-      return res.redirect("/auth/login");
+      return res.status(401).send("Invalid username or password");
     }
     req.session.userId = user.id;
     res.redirect("/movie");
   });
 });
 
-// Signup
+// Handle signup
 router.post("/signup", (req, res) => {
   const { username, password } = req.body;
-  // Check if username already exists
   User.findByUsername(username, (err, user) => {
     if (err) {
       console.error(err);
-      return res.redirect("/auth/login");
+      return res.status(500).send("Internal Server Error");
     }
     if (user) {
-      return res.redirect("/auth/login");
+      return res.status(400).send("Username already exists");
     }
-    // Create a new user
     User.create(username, password, (err, userId) => {
       if (err) {
         console.error(err);
-        return res.redirect("/auth/login");
+        return res.status(500).send("Internal Server Error");
       }
       req.session.userId = userId;
       res.redirect("/movie");
@@ -59,7 +57,7 @@ router.post("/signup", (req, res) => {
   });
 });
 
-// Logout
+// Handle logout
 router.get("/logout", (req, res) => {
   req.session.destroy();
   res.redirect("/auth/login");

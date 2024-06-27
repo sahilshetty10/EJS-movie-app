@@ -1,8 +1,8 @@
 <div class="w-[200px] flex-none overflow-hidden rounded-2xl">
   <div class="relative aspect-[2/3]">
     <img
-      class="absolute bottom-0 right-0 p-4"
-      src="heart-solid.svg"
+      class="absolute bottom-0 right-0 z-30 h-24 w-24 cursor-pointer p-4 transition hover:scale-105"
+      src="/heart-solid.svg"
       onclick="addToFavorites(<%= movie.id %>, '<%= movie.title || movie.name %>')"
     />
     <img

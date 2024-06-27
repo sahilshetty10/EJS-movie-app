@@ -11,35 +11,43 @@ function isLoggedIn(req, res, next) {
   }
 }
 
-// home page
+// Use movieHome router for home page
 router.use(isLoggedIn, require("./movieHome"));
 
-router.post("/favorites/add", isLoggedIn, async (req, res) => {
-  try {
-    const { movieId, title } = req.body;
-    await Favorite.add(req.session.userId, movieId, title);
-
-    const favorites = await Favorite.findByUserId(req.session.userId);
-    res.render("partials/sidebar", { favorites });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Internal Server Error");
-  }
+// Add favorite movie
+router.post("/favorites/add", isLoggedIn, (req, res) => {
+  const { movieId, title } = req.body;
+  Favorite.add(req.session.userId, movieId, title, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Internal Server Error");
+    }
+    Favorite.findByUserId(req.session.userId, (err, favorites) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send("Internal Server Error");
+      }
+      res.render("partials/sidebar", { favorites });
+    });
+  });
 });
 
-router.delete("/favorites/remove", isLoggedIn, async (req, res) => {
-  try {
-    const { movieId } = req.body;
-    console.log(movieId);
-    await Favorite.remove(req.session.userId, movieId, (err) => {
-      if (err) throw err;
+// Remove favorite movie
+router.delete("/favorites/remove", isLoggedIn, (req, res) => {
+  const { movieId } = req.body;
+  Favorite.remove(req.session.userId, movieId, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Internal Server Error");
+    }
+    Favorite.findByUserId(req.session.userId, (err, favorites) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send("Internal Server Error");
+      }
+      res.render("partials/sidebar", { favorites });
     });
-    const favorites = await Favorite.findByUserId(req.session.userId);
-    res.render("partials/sidebar", { favorites });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Internal Server Error");
-  }
+  });
 });
 
 module.exports = router;

@@ -2,58 +2,58 @@ const express = require("express");
 const router = express.Router();
 const Favorites = require("../model/Favorites");
 
-// fetch data from tmdb api
+// Fetch data from TMDB API
 const api_key = "1f54bd990f1cdfb230adb312546d765d";
 
-router.get("/", async (req, res) => {
-  // Get favorites for the logged-in user
-  let favorites = await Favorites.findByUserId(req.session.userId);
-  if (!favorites) {
-    favorites = [];
-  }
+// Home route to display movies and TV shows
+router.get("/", (req, res) => {
+  Favorites.findByUserId(req.session.userId, (err, favorites) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Internal Server Error");
+    }
 
-  // Fetch all data in parallel
-  const [
-    featuredMoviesResponse,
-    trendingMoviesResponse,
-    topRatedMoviesResponse,
-    featuredTvResponse,
-    trendingTvResponse,
-    topRatedTvResponse,
-  ] = await Promise.all([
-    fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${api_key}`),
-    fetch(`https://api.themoviedb.org/3/trending/movie/day?api_key=${api_key}`),
-    fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=${api_key}`),
-    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${api_key}`),
-    fetch(`https://api.themoviedb.org/3/trending/tv/day?api_key=${api_key}`),
-    fetch(`https://api.themoviedb.org/3/tv/top_rated?api_key=${api_key}`),
-  ]);
+    if (!favorites) {
+      favorites = [];
+    }
 
-  // Parse JSON responses
-  const [
-    featuredMoviesData,
-    trendingMoviesData,
-    topRatedMoviesData,
-    featuredTvData,
-    trendingTvData,
-    topRatedTvData,
-  ] = await Promise.all([
-    featuredMoviesResponse.json(),
-    trendingMoviesResponse.json(),
-    topRatedMoviesResponse.json(),
-    featuredTvResponse.json(),
-    trendingTvResponse.json(),
-    topRatedTvResponse.json(),
-  ]);
-  res.render("movie", {
-    title: "Movie Home",
-    featuredMovies: featuredMoviesData.results,
-    trendingMovies: trendingMoviesData.results,
-    topRatedMovies: topRatedMoviesData.results,
-    featuredTvShows: featuredTvData.results,
-    trendingTvShows: trendingTvData.results,
-    topRatedTvShows: topRatedTvData.results,
-    favorites,
+    // Fetch all data in parallel
+    Promise.all([
+      fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${api_key}`),
+      fetch(
+        `https://api.themoviedb.org/3/trending/movie/day?api_key=${api_key}`,
+      ),
+      fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=${api_key}`),
+      fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${api_key}`),
+      fetch(`https://api.themoviedb.org/3/trending/tv/day?api_key=${api_key}`),
+      fetch(`https://api.themoviedb.org/3/tv/top_rated?api_key=${api_key}`),
+    ])
+      .then((responses) => Promise.all(responses.map((res) => res.json())))
+      .then(
+        ([
+          featuredMoviesData,
+          trendingMoviesData,
+          topRatedMoviesData,
+          featuredTvData,
+          trendingTvData,
+          topRatedTvData,
+        ]) => {
+          res.render("movie", {
+            title: "Movie Home",
+            featuredMovies: featuredMoviesData.results,
+            trendingMovies: trendingMoviesData.results,
+            topRatedMovies: topRatedMoviesData.results,
+            featuredTvShows: featuredTvData.results,
+            trendingTvShows: trendingTvData.results,
+            topRatedTvShows: topRatedTvData.results,
+            favorites,
+          });
+        },
+      )
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+      });
   });
 });
 

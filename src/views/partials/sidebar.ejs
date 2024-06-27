@@ -1,4 +1,4 @@
-<aside class="fixed top-24 h-[calc(100vh-6rem)] w-80 px-4">
+<aside class="fixed top-24 h-[calc(100vh-6rem)] w-80 px-4 overflow-auto">
   <ul class="flex flex-col gap-8">
     <li onclick="showMovie()" class="title">Movies</li>
     <li onclick="showTv()" class="title">TV Shows</li>
@@ -6,7 +6,7 @@
     <li>
       <ul class="flex gap-4 flex-col border-t-2 pt-4">
         <% favorites.forEach(favorite => { %>
-          <li onclick="removeFromFavorites(<%= favorite.id %>)"><%= favorite.title %></li>
+          <li onclick="removeFromFavorites(<%= favorite.movie_id %>)"><%= favorite.title %></li>
         <% }) %>
       </ul>
     </li>
