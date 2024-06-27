@@ -12,6 +12,7 @@ app.set("view engine", "ejs");
 
 // Parse URL-encoded bodies
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
 
 // Use the express-session middleware
 app.use(
@@ -19,7 +20,7 @@ app.use(
     secret: "wddm120project2",
     resave: false,
     saveUninitialized: false,
-  })
+  }),
 );
 
 // Serve static files from the "public" directory

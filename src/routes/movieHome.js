@@ -7,7 +7,10 @@ const api_key = "1f54bd990f1cdfb230adb312546d765d";
 
 router.get("/", async (req, res) => {
   // Get favorites for the logged-in user
-  //   const favorites = Favorites.findByUserId(req.session.userId);
+  let favorites = await Favorites.findByUserId(req.session.userId);
+  if (!favorites) {
+    favorites = [];
+  }
 
   // Fetch all data in parallel
   const [
@@ -42,7 +45,6 @@ router.get("/", async (req, res) => {
     trendingTvResponse.json(),
     topRatedTvResponse.json(),
   ]);
-
   res.render("movie", {
     title: "Movie Home",
     featuredMovies: featuredMoviesData.results,
@@ -51,7 +53,7 @@ router.get("/", async (req, res) => {
     featuredTvShows: featuredTvData.results,
     trendingTvShows: trendingTvData.results,
     topRatedTvShows: topRatedTvData.results,
-    // favorites,
+    favorites,
   });
 });
 

@@ -12,22 +12,34 @@ function isLoggedIn(req, res, next) {
 }
 
 // home page
-router.use(require("./movieHome"));
+router.use(isLoggedIn, require("./movieHome"));
 
-router.post("/favorites/add", isLoggedIn, (req, res) => {
-  const { movieId } = req.body;
-  Favorite.add(req.session.userId, movieId, (err) => {
-    if (err) throw err;
-    res.redirect("/movies");
-  });
+router.post("/favorites/add", isLoggedIn, async (req, res) => {
+  try {
+    const { movieId, title } = req.body;
+    await Favorite.add(req.session.userId, movieId, title);
+
+    const favorites = await Favorite.findByUserId(req.session.userId);
+    res.render("partials/sidebar", { favorites });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
-router.post("/favorites/remove", isLoggedIn, (req, res) => {
-  const { movieId } = req.body;
-  Favorite.remove(req.session.userId, movieId, (err) => {
-    if (err) throw err;
-    res.redirect("/movies");
-  });
+router.delete("/favorites/remove", isLoggedIn, async (req, res) => {
+  try {
+    const { movieId } = req.body;
+    console.log(movieId);
+    await Favorite.remove(req.session.userId, movieId, (err) => {
+      if (err) throw err;
+    });
+    const favorites = await Favorite.findByUserId(req.session.userId);
+    res.render("partials/sidebar", { favorites });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 module.exports = router;

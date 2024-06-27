@@ -5,53 +5,61 @@ const User = require("../model/User");
 // Middleware to check if the user is logged in
 function isLoggedIn(req, res, next) {
   if (req.session.userId) {
-    res.redirect("/movies");
+    return res.redirect("/movie");
   }
   next();
 }
 
-// render login or signup page if user is not already logged in
+// Render login or signup page if user is not already logged in
 router.get("/login", isLoggedIn, (req, res) => {
   res.render("login", { title: "Login" });
 });
 
-router.get("/signup", (req, res) => {
-  res.render("signup");
+router.get("/signup", isLoggedIn, (req, res) => {
+  res.render("signup", { title: "Sign Up" });
 });
 
-// login
+// Login
 router.post("/login", (req, res) => {
   const { username, password } = req.body;
   User.findByUsername(username, (err, user) => {
-    if (err) throw err;
+    if (err) {
+      console.error(err);
+      return res.redirect("/auth/login");
+    }
     if (!user || user.password !== password) {
       return res.redirect("/auth/login");
     }
     req.session.userId = user.id;
-    res.redirect("/movies");
+    res.redirect("/movie");
   });
 });
 
-// signup
+// Signup
 router.post("/signup", (req, res) => {
   const { username, password } = req.body;
-  // check if username already exists and redirect to login page if it does
+  // Check if username already exists
   User.findByUsername(username, (err, user) => {
-    if (err) throw err;
+    if (err) {
+      console.error(err);
+      return res.redirect("/auth/login");
+    }
     if (user) {
       return res.redirect("/auth/login");
     }
-  });
-  // create a new user and redirect to movies page
-
-  User.create(username, password, (err, userId) => {
-    if (err) throw err;
-    req.session.userId = userId;
-    res.redirect("/movies");
+    // Create a new user
+    User.create(username, password, (err, userId) => {
+      if (err) {
+        console.error(err);
+        return res.redirect("/auth/login");
+      }
+      req.session.userId = userId;
+      res.redirect("/movie");
+    });
   });
 });
 
-// logout
+// Logout
 router.get("/logout", (req, res) => {
   req.session.destroy();
   res.redirect("/auth/login");

@@ -1,0 +1,14 @@
+<div class="w-[200px] flex-none overflow-hidden rounded-2xl">
+  <div class="relative aspect-[2/3]">
+    <img
+      class="absolute bottom-0 right-0 p-4"
+      src="heart-solid.svg"
+      onclick="addToFavorites(<%= movie.id %>, '<%= movie.title || movie.name %>')"
+    />
+    <img
+      class="h-full w-full object-cover"
+      src="https://image.tmdb.org/t/p/w500<%= movie.poster_path %>"
+    />
+  </div>
+  <h3 class="truncate text-center text-xl"><%= movie.title || movie.name %></h3>
+</div>

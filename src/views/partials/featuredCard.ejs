@@ -1,0 +1,21 @@
+<div
+  class="relative flex-none overflow-hidden rounded-2xl"
+  onclick="addToFavorites(<%= movie.id %>, '<%= movie.title || movie.name %>')"
+>
+  <div
+    class="absolute z-10 flex h-full w-[300px] items-center bg-gradient-to-r from-black via-black to-transparent pl-8 text-5xl text-white"
+  >
+    <%= movie.title || movie.name %>
+  </div>
+  <div class="img-container relative h-full">
+    <!-- <img
+      class="heart-icon"
+      src="heart-solid.svg"
+      onclick="addToFavorites('<%= movie.title || movie.name %>')"
+    /> -->
+    <img
+      class="aspect-video w-full object-cover pl-[150px]"
+      src="https://image.tmdb.org/t/p/w780<%= movie.poster_path %>"
+    />
+  </div>
+</div>

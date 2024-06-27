@@ -1,6 +1,6 @@
 // db/database.js
 const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database(":memory:");
+const db = new sqlite3.Database("db.sqlite");
 
 // db with 2 tables: users and favorites
 
@@ -10,10 +10,10 @@ const db = new sqlite3.Database(":memory:");
 
 db.serialize(() => {
   db.run(
-    "CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, password TEXT)"
+    "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT)",
   );
   db.run(
-    "CREATE TABLE favorites (id INTEGER PRIMARY KEY, user_id INTEGER, movie_id INTEGER UNIQUE, FOREIGN KEY(user_id) REFERENCES users(id))"
+    "CREATE TABLE IF NOT EXISTS favorites (id INTEGER PRIMARY KEY, user_id INTEGER, movie_id INTEGER, title TEXT, UNIQUE(user_id, movie_id), FOREIGN KEY(user_id) REFERENCES users(id))",
   );
 });
 
