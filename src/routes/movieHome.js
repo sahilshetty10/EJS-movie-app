@@ -9,7 +9,7 @@ const api_key = "1f54bd990f1cdfb230adb312546d765d";
 router.get("/", (req, res) => {
   Favorites.findByUserId(req.session.userId, (err, favorites) => {
     if (err) {
-      console.error(err);
+      console.error(`Error fetching favorites: ${err}`);
       return res.status(500).send("Internal Server Error");
     }
 
@@ -40,6 +40,7 @@ router.get("/", (req, res) => {
         ]) => {
           res.render("movie", {
             title: "Movie Home",
+            username: req.session.username,
             featuredMovies: featuredMoviesData.results,
             trendingMovies: trendingMoviesData.results,
             topRatedMovies: topRatedMoviesData.results,
@@ -51,7 +52,7 @@ router.get("/", (req, res) => {
         },
       )
       .catch((err) => {
-        console.error(err);
+        console.error(`Error fetching movies/TV data: ${err}`);
         res.status(500).send("Internal Server Error");
       });
   });

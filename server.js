@@ -35,6 +35,18 @@ app.get("/", (req, res) => {
   res.redirect("/movie");
 });
 
+// 404 page
+app.get("/404", (req, res) => {
+  res.render("404", {
+    title: "404 Page Not Found",
+  });
+});
+
+// redirect to /404 page if route not found
+app.get("*", (req, res) => {
+  res.redirect("/404");
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`App running at http://localhost:${port}`);

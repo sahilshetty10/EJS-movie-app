@@ -1,12 +1,21 @@
-<aside class="fixed top-24 h-[calc(100vh-6rem)] w-80 px-4 overflow-auto">
+<aside class="fixed top-24 h-[calc(100vh-6rem)] w-80 px-8">
   <ul class="flex flex-col gap-8">
     <li onclick="showMovie()" class="title">Movies</li>
     <li onclick="showTv()" class="title">TV Shows</li>
     <li class="title">Favourites</li>
-    <li>
-      <ul class="flex gap-4 flex-col border-t-2 pt-4">
+    <li class="h-full overflow-auto">
+      <ul class="flex h-full flex-col gap-4 overflow-auto border-t-4 pt-4">
         <% favorites.forEach(favorite => { %>
-          <li onclick="removeFromFavorites(<%= favorite.movie_id %>)"><%= favorite.title %></li>
+        <li class="group flex relative">
+          <p class="truncate"><%= favorite.title %></p>
+          <button
+            class="text-red-500 hidden absolute right-0 bg-white px-4 group-hover:block remove-btn"
+            data-movie-id="<%= favorite.movie_id %>"
+            onclick="removeFromFavorites(event)"
+          >
+            Remove
+          </button>
+        </li>
         <% }) %>
       </ul>
     </li>

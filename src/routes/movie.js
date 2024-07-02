@@ -7,6 +7,7 @@ function isLoggedIn(req, res, next) {
   if (req.session.userId) {
     next();
   } else {
+    console.log("Unauthorized access attempt");
     res.redirect("/auth/login");
   }
 }
@@ -19,12 +20,18 @@ router.post("/favorites/add", isLoggedIn, (req, res) => {
   const { movieId, title } = req.body;
   Favorite.add(req.session.userId, movieId, title, (err) => {
     if (err) {
-      console.error(err);
-      return res.status(500).send("Internal Server Error");
+      if (err.message.includes("UNIQUE constraint failed")) {
+        console.log(`Movie already in favorites: ${title}`);
+        return res.status(400).send("Movie already in favorites");
+      } else {
+        console.error(`Error adding favorite: ${err}`);
+        return res.status(500).send("Internal Server Error");
+      }
     }
+    console.log(`Added movie to favorites: ${title}`);
     Favorite.findByUserId(req.session.userId, (err, favorites) => {
       if (err) {
-        console.error(err);
+        console.error(`Error fetching favorites: ${err}`);
         return res.status(500).send("Internal Server Error");
       }
       res.render("partials/sidebar", { favorites });
@@ -37,12 +44,13 @@ router.delete("/favorites/remove", isLoggedIn, (req, res) => {
   const { movieId } = req.body;
   Favorite.remove(req.session.userId, movieId, (err) => {
     if (err) {
-      console.error(err);
+      console.error(`Error removing favorite: ${err}`);
       return res.status(500).send("Internal Server Error");
     }
+    console.log(`Removed movie from favorites: ${movieId}`);
     Favorite.findByUserId(req.session.userId, (err, favorites) => {
       if (err) {
-        console.error(err);
+        console.error(`Error fetching favorites: ${err}`);
         return res.status(500).send("Internal Server Error");
       }
       res.render("partials/sidebar", { favorites });

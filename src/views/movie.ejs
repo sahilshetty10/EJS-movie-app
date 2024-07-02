@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,20 +6,9 @@
     <%- include('partials/head.ejs') %>
   </head>
   <body>
-    <header>
-      <nav class="h-24 flex justify-between">
-        <div id="logo">Movie App</div>
-        <ul class="flex">
-          <li>login</li>
-          <li>signup</li>
-          <li>logout</li>
-        </ul>
-      </nav>
-    </header>
+    <%- include('partials/header.ejs') %>
     <!-- Aside Section -->
-     <section id="sidebar">
-       <%- include('partials/sidebar') %>
-      </section>
+    <section id="sidebar"><%- include('partials/sidebar') %></section>
     <!-- Main Section -->
     <main class="top-24 ml-80">
       <!-- Movie Section -->
@@ -28,24 +17,27 @@
         <section id="hero">
           <h2 id="hero-title" class="title">Featured Movies</h2>
           <div id="hero-container" class="cards-container">
-            <% featuredMovies.forEach(movie => { %> <%-
-            include('partials/featuredCard', { movie: movie }) %> <% }) %>
+            <% featuredMovies.forEach(movie => { %>
+            <%- include('partials/featuredCard', { movie: movie }) %>
+            <% }) %>
           </div>
         </section>
         <!-- Trending -->
         <section id="trending">
           <h2 id="trending-title" class="title">Trending Movies</h2>
           <div id="trending-container" class="cards-container">
-            <% trendingMovies.forEach(movie => { %> <%-
-            include('partials/movieCard', { movie: movie }) %> <% }) %>
+            <% trendingMovies.forEach(movie => { %>
+            <%- include('partials/movieCard', { movie: movie }) %>
+            <% }) %>
           </div>
         </section>
         <!-- Top Rated -->
         <section id="top-rated">
           <h2 id="top-rated-title" class="title">Top Rated Movies</h2>
           <div id="top-rated-container" class="cards-container">
-            <% topRatedMovies.forEach(movie => { %> <%-
-            include('partials/movieCard', { movie: movie }) %> <% }) %>
+            <% topRatedMovies.forEach(movie => { %>
+            <%- include('partials/movieCard', { movie: movie }) %>
+            <% }) %>
           </div>
         </section>
       </section>
@@ -55,24 +47,27 @@
         <section id="hero">
           <h2 id="hero-title" class="title">Featured TV Shows</h2>
           <div id="hero-container" class="cards-container">
-            <% featuredTvShows.forEach(tv => { %> <%-
-            include('partials/featuredCard', { movie: tv }) %> <% }) %>
+            <% featuredTvShows.forEach(tv => { %>
+            <%- include('partials/featuredCard', { movie: tv }) %>
+            <% }) %>
           </div>
         </section>
         <!-- Trending -->
         <section id="trending">
           <h2 id="trending-title" class="title">Trending TV Shows</h2>
           <div id="trending-container" class="cards-container">
-            <% trendingTvShows.forEach(tv => { %> <%-
-            include('partials/movieCard', { movie: tv }) %> <% }) %>
+            <% trendingTvShows.forEach(tv => { %>
+            <%- include('partials/movieCard', { movie: tv }) %>
+            <% }) %>
           </div>
         </section>
         <!-- Top Rated -->
         <section id="top-rated">
           <h2 id="top-rated-title" class="title">Top Rated TV Shows</h2>
           <div id="top-rated-container" class="cards-container">
-            <% topRatedTvShows.forEach(tv => { %> <%-
-            include('partials/movieCard', { movie: tv }) %> <% }) %>
+            <% topRatedTvShows.forEach(tv => { %>
+            <%- include('partials/movieCard', { movie: tv }) %>
+            <% }) %>
           </div>
         </section>
       </section>
@@ -80,60 +75,6 @@
     <footer>
       <p>&copy; 2024 Movie App; Made with &hearts; by Sahil Shetty</p>
     </footer>
-    <script>
-      const showMovie = () => {
-        document.getElementById('movie').style.display = 'block';
-        document.getElementById('tv').style.display = 'none';
-      };
-      const showTv = () => {
-        document.getElementById('movie').style.display = 'none';
-        document.getElementById('tv').style.display = 'block';
-      };
-
-      // Add to Favourites
-      // function to post to /favourites/add with movie id
-      const addToFavorites = (movieId, title) => {
-        console.log(movieId, title);
-        fetch('/movie/favorites/add', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ movieId, title}),
-        })
-          .then((res) => {
-
-            if(!res.ok) {
-              throw new Error('Failed to add to favorites');
-            };
-            return res.text()})
-          .then((data) => {
-            console.log(data);
-            document.getElementById('sidebar').innerHTML = data;
-          });
-      };
-
-      // Remove from Favourites
-      // function to post to /favourites/remove with movie id
-      const removeFromFavorites = (movieId) => {
-        fetch('/movie/favorites/remove', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ movieId}),
-        })
-          .then((res) => {
-
-            if(!res.ok) {
-              throw new Error('Failed to remove from favorites');
-            };
-            return res.text()})
-          .then((data) => {
-            console.log(data);
-            document.getElementById('sidebar').innerHTML = data;
-          });
-      };
-    </script>
+    <script src="/js/script.js"></script>
   </body>
 </html>

@@ -7,7 +7,11 @@ const Favorites = {
       "INSERT INTO favorites (user_id, movie_id, title) VALUES (?, ?, ?)",
       [userId, movieId, title],
       function (err) {
-        if (err) return callback(err);
+        if (err) {
+          console.error(`Error adding favorite: ${err}`);
+          return callback(err);
+        }
+        console.log(`Added to favorites: ${title}`);
         callback(null, this.lastID);
       },
     );
@@ -17,9 +21,13 @@ const Favorites = {
     db.run(
       "DELETE FROM favorites WHERE user_id = ? AND movie_id = ?",
       [userId, movieId],
-      function (err) {
-        if (err) return callback(err);
-        callback(null, this.lastID);
+      (err) => {
+        if (err) {
+          console.error(`Error removing favorite: ${err}`);
+          return callback(err);
+        }
+        console.log(`Removed from favorites: ${movieId}`);
+        callback(null);
       },
     );
   },
@@ -28,9 +36,12 @@ const Favorites = {
     db.all(
       "SELECT * FROM favorites WHERE user_id = ?",
       [userId],
-      (err, favorites) => {
-        if (err) return callback(err);
-        callback(null, favorites);
+      (err, rows) => {
+        if (err) {
+          console.error(`Error fetching favorites: ${err}`);
+          return callback(err);
+        }
+        callback(null, rows);
       },
     );
   },
