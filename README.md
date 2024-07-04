@@ -15,7 +15,7 @@ This project is a movie app that allows users to sign up and access the latest m
 - Clone the repo
 
 ```bash
-git clone https://github.com/yourusername/movie-app.git
+git clone https://github.com/sahilshetty10/EJS-movie-app.git
 cd movie-app
 ```
 

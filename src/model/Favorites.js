@@ -34,7 +34,7 @@ const Favorites = {
 
   findByUserId: (userId, callback) => {
     db.all(
-      "SELECT * FROM favorites WHERE user_id = ?",
+      "SELECT * FROM favorites WHERE user_id = ? ORDER BY id",
       [userId],
       (err, rows) => {
         if (err) {

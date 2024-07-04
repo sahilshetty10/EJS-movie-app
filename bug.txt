@@ -1,0 +1,69 @@
+Introduction
+
+The app currently has functionality to let user create account and signin.
+The user is then shown the home page where they can add movies/shows to favorites.
+The favorites are shown in the sidebar for quick access.
+
+
+The Problem?
+
+The favorite item is only to be added to the list upon successful insertion in the database.
+This has to be handled by the backend and the client should get a response accordingly.
+With the app using EJS, it is tricky to handle dynamic states in the app.
+The sidebar does not show favorites in the order that they were added.
+
+
+Debugging
+
+The server uses the "favorites" model to query the database for the favorite items.
+The part of code that renders the sidebar is very simple and does not seem to have any errors.
+```
+Favorite.findByUserId(req.session.userId, (err, favorites) => {
+      if (err) {
+        console.error(`Error fetching favorites: ${err}`);
+        return res.status(500).send("Internal Server Error");
+      }
+      res.render("partials/sidebar", { favorites });
+    });
+```
+Now we can safely assume that the problem lies within the favorites model itself.
+But first lets take a look at what is making the items render in random order.
+Each item in the favorite list is a <li> tag with a data attribute for the movie-id.
+If we look at each item with the data attribute, we can see a pattern.
+The items are not rendered randomly afterall and seem to be sorted by the movie-id.
+This is not ideal and we want the items to be rendered in the order that they were added.
+
+
+The Solution.
+
+Now that we know the problem lies within the favorites model iteself, lets take a look.
+```
+findByUserId: (userId, callback) => {
+    db.all(
+      "SELECT * FROM favorites WHERE user_id = ?",
+      [userId],
+      (err, rows) => {
+        if (err) {
+          console.error(`Error fetching favorites: ${err}`);
+          return callback(err);
+        }
+        callback(null, rows);
+      },
+    );
+  },
+```
+Here we can see that the query is a simple fetch from the database without any explicit instruction to order the results.
+The database has only 4 columns i.e. id, user_id, movie_id, title.
+The results that we get are for sorted by "movie_id" by default in this case.
+This can be easily fixed with adding the "ORDER BY" parameter to the query and set it to order by "id".
+The resulting query will be
+```
+"SELECT * FROM favorites WHERE user_id = ? ORDER BY id".
+```
+This fixes the problem of having the favorites render in the order that they were added.
+
+
+Tools Used
+
+Chrome Developer Tools to inspect the page.
+Console.log() to print the responses to the terminal.

@@ -32,12 +32,10 @@ router.post("/login", (req, res) => {
     }
     if (!user || user.password !== password) {
       console.log(`Invalid login attempt for username: ${username}`);
-      return res
-        .status(401)
-        .render("login", {
-          title: "Login",
-          error: "Invalid username or password",
-        });
+      return res.status(401).render("login", {
+        title: "Login",
+        error: "Invalid username or password",
+      });
     }
     req.session.userId = user.id;
     req.session.username = user.username;
@@ -48,7 +46,12 @@ router.post("/login", (req, res) => {
 
 // Handle signup
 router.post("/signup", (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, confirmPassword } = req.body;
+  if (password !== confirmPassword) {
+    return res
+      .status(400)
+      .render("signup", { title: "Sign Up", error: "Passwords do not match" });
+  }
   User.findByUsername(username, (err, user) => {
     if (err) {
       console.error(`Error during signup: ${err}`);
@@ -58,24 +61,21 @@ router.post("/signup", (req, res) => {
     }
     if (user) {
       console.log(`Signup attempt with existing username: ${username}`);
-      return res
-        .status(400)
-        .render("signup", {
-          title: "Sign Up",
-          error: "Username already exists",
-        });
+      return res.status(400).render("signup", {
+        title: "Sign Up",
+        error: "Username already exists",
+      });
     }
     User.create(username, password, (err, userId) => {
       if (err) {
         console.error(`Error during user creation: ${err}`);
-        return res
-          .status(500)
-          .render("signup", {
-            title: "Sign Up",
-            error: "Internal Server Error",
-          });
+        return res.status(500).render("signup", {
+          title: "Sign Up",
+          error: "Internal Server Error",
+        });
       }
       req.session.userId = userId;
+      req.session.username = username;
       console.log(`User signed up: ${username}`);
       res.redirect("/movie");
     });
